@@ -12,14 +12,15 @@ uri="http://java.sun.com/jsp/jstl/core" %>
   <body>
     <div>
       <c:forEach var="cancion" items="${listaCanciones}">
-        <h2><a href="/detalle/cancion/${cancion.id}">${cancion.titulo}</a></h2>
+        <h2><a href="/canciones/detalle/cancion/${cancion.id}">${cancion.titulo}</a></h2>
 
-        <form method="POST" action="/eliminar/${cancion.id}">
+        <form method="POST" action="/canciones/eliminar/${cancion.id}">
           <input type="hidden" name="_method" value="DELETE">
           <button>Eliminar</button>
         </form>
       </c:forEach>
     </div>
-    <a href="/formulario/agregar">Agregar una canción</a>
+    <a href="/canciones/formulario/agregar">Agregar una canción</a>
+    <a href="/artistas">Ir a artistas</a>
   </body>
 </html>

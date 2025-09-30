@@ -13,7 +13,7 @@
   </head>
   <body>
     <form:form
-      action="/procesa/editar/${cancion.id}"
+      action="/canciones/procesa/editar/${cancion.id}"
       method="POST"
       modelAttribute="cancion"
     >

@@ -7,7 +7,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
+import com.nicolas.models.Artista;
 import com.nicolas.models.Cancion;
+import com.nicolas.services.ServicioArtistas;
 import com.nicolas.services.ServicioCanciones;
 
 import jakarta.validation.Valid;
@@ -18,14 +20,19 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class ControladorCanciones {
     @Autowired
     private final ServicioCanciones servicioCanciones;
 
-    public ControladorCanciones(ServicioCanciones servicioCanciones) {
+    @Autowired
+    private final ServicioArtistas servicioArtistas;
+
+    public ControladorCanciones(ServicioCanciones servicioCanciones, ServicioArtistas servicioArtistas) {
         this.servicioCanciones = servicioCanciones;
+        this.servicioArtistas = servicioArtistas;
     }
 
     @GetMapping("/canciones")
@@ -35,7 +42,7 @@ public class ControladorCanciones {
         return "canciones";
     }
 
-    @GetMapping("/detalle/cancion/{idCancion}")
+    @GetMapping("/canciones/detalle/cancion/{idCancion}")
     public String detalleCancion(@PathVariable Long idCancion, Model modelo) {
         Cancion cancion = this.servicioCanciones.obtenerPorId(idCancion);
         if (cancion == null) {
@@ -45,32 +52,38 @@ public class ControladorCanciones {
         return "detalleCancion";
     }
 
-    @GetMapping("/formulario/agregar")
-    public String formularioCancion(@ModelAttribute("nuevaCancion") Cancion nuevaCancion) {
+    @GetMapping("/canciones/formulario/agregar")
+    public String formularioCancion(@ModelAttribute("nuevaCancion") Cancion nuevaCancion, Model modelo) {
+        List<Artista> artistas = this.servicioArtistas.obtenerArtistas();
+        modelo.addAttribute("artistas", artistas);
         return "agregarCancion";
     }
 
-    @PostMapping("/procesa/agregar")
+    @PostMapping("/canciones/procesa/agregar")
     public String agregarCancion(@Valid @ModelAttribute("nuevaCancion") Cancion nuevaCancion,
-            BindingResult validaciones) {
+            BindingResult validaciones, @RequestParam Long idArtista) {
 
         if (validaciones.hasErrors()) {
             return "agregarCancion";
         }
+
+        Artista artista = this.servicioArtistas.obtenerArtistaId(idArtista);
+        nuevaCancion.setArtista(artista);
+
         this.servicioCanciones.agregarCancion(nuevaCancion);
         return "redirect:/canciones";
 
     }
 
-    @GetMapping("/formulario/editar/{idCancion}")
+    @GetMapping("/canciones/formulario/editar/{idCancion}")
     public String formularioEditarCancion(@PathVariable Long idCancion, Model modelo) {
         Cancion cancion = this.servicioCanciones.obtenerPorId(idCancion);
         modelo.addAttribute("cancion", cancion);
         return "editarCancion";
     }
 
-    @PutMapping("/procesa/editar/{idCancion}")
-    public String putMethodName(@Valid @ModelAttribute("cancion") Cancion cancion,
+    @PutMapping("/canciones/procesa/editar/{idCancion}")
+    public String actualizarCancion(@Valid @ModelAttribute("cancion") Cancion cancion,
             BindingResult validacioes,
             @PathVariable Long idCancion) {
 
@@ -80,10 +93,10 @@ public class ControladorCanciones {
         cancion.setId(idCancion);
         this.servicioCanciones.actualizarCancion(cancion);
 
-        return "redirect:/detalle/cancion/" + idCancion;
+        return "redirect:/canciones/detalle/cancion/" + idCancion;
     }
 
-    @DeleteMapping("/eliminar/{idCancion}")
+    @DeleteMapping("/canciones/eliminar/{idCancion}")
     public String eliminarCancion(@PathVariable Long idCancion){
         this.servicioCanciones.eliminarCancion(idCancion);
         return "redirect:/canciones";

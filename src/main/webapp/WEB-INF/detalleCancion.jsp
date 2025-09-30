@@ -11,12 +11,12 @@ uri="http://java.sun.com/jsp/jstl/core" %>
   <body>
     <h1>Detalle Cancion: ${cancion.titulo}</h1>
 
-    <p>Artista: ${cancion.artista}</p>
+    <p>Artista: ${cancion.artista.nombre}</p>
     <p>Albúm: ${cancion.album}</p>
     <p>Genero: ${cancion.genero}</p>
     <p>Idioma: ${cancion.idioma}</p>
 
-    <form method="GET" action="/formulario/editar/${cancion.id}">
+    <form method="GET" action="/canciones/formulario/editar/${cancion.id}">
       <button >Editar</button>
     </form>
 
